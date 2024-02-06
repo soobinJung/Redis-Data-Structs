@@ -49,9 +49,20 @@ Redis와 Spring Data Redis는 유연한 데이터 모델링을 지원하지만, 
 RedisTemplate은 Spring Data Redis에서 제공하는 중앙 클래스로, Redis와의 상호작용을 위한 고수준 추상화를 제공합니다. 
 RedisTemplate은 연결 관리, 직렬화, Redis 명령 실행 등을 처리합니다.
 
-# HashOperations
+## HashOperations
 HashOperations 인터페이스는 Redis의 Hash 데이터 구조와 상호작용하기 위한 연산을 정의합니다. 
 이를 통해 개발자는 Hash 타입의 데이터를 쉽게 저장, 검색, 삭제할 수 있습니다.
+
+```
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+    private HashOperations<String, String, String> hashOperations;
+
+    @PostConstruct
+    private void init() {
+        hashOperations = redisTemplate.opsForHash();
+    }
+```
 
 ### 장점
 ##### 🚀 구조화된 데이터 저장
@@ -75,9 +86,21 @@ HashOperations를 사용할 때 내부적으로 직렬화와 역직렬화 처리
 이로 인해 대량의 데이터를 처리할 때 성능 저하가 발생할 수 있습니다.
  
 
-# SetOperations
+## SetOperations
 SetOperations는 Spring Data Redis에서 제공하는 인터페이스로, Redis의 집합(Set) 데이터 구조와의 상호작용을 위한 연산을 정의합니다.
 Redis의 집합은 중복을 허용하지 않는 문자열의 컬렉션으로, 주로 고유 값의 저장, 멤버십 테스트, 집합 간 연산(교집합, 합집합, 차집합) 등에 사용됩니다. SetOperations를 사용하는 것의 장단점은 다음과 같습니다.
+
+```
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+    private SetOperations<String, String> setOperations;
+
+
+    @PostConstruct
+    private void init() {
+        this.setOperations = redisTemplate.opsForSet();
+    }
+```
 
 ### 장점
 ##### 🚀 중복 방지
