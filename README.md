@@ -99,7 +99,7 @@ Redis의 집합은 중복을 허용하지 않는 문자열의 컬렉션으로, �
     @PostConstruct
     private void init() {
         this.setOperations = redisTemplate.opsForSet();
-    }
+    } 
 ```
 
 ### 장점
