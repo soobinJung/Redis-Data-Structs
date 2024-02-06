@@ -3,7 +3,19 @@
 Spring Data Redis는 Spring Framework에서 제공하는 모듈로, Redis와의 상호작용을 쉽게 만들어주는 고수준의 추상화를 제공합니다. 
 이 모듈을 통해 Redis 데이터 액세스 코드를 쉽게 작성할 수 있으며, Redis 지원 데이터 구조와의 작업을 간소화합니다.
 
+
 ### 장점
+
+
+##### 🚀 효율적인 데이터 관리
+Redis의 데이터 구조는 메모리 기반의 고성능 처리를 위해 최적화되어 있으며, 이를 통해 애플리케이션의 데이터 처리 속도와 성능을 개선할 수 있습니다.
+
+##### 🚀 분산 시스템에서의 데이터 공유
+Redis는 네트워크를 통해 접근 가능한 분산 데이터 스토어를 제공합니다. 이를 통해 여러 애플리케이션 인스턴스 간에 데이터를 쉽게 공유하고 동기화할 수 있습니다.
+
+##### 🚀 데이터 구조의 확장성과 유연성
+Redis는 다양한 데이터 구조를 지원하여, 복잡한 데이터 타입과 다양한 사용 사례를 처리할 수 있는 유연성을 제공합니다. 이는 애플리케이션의 요구 사항에 맞춰 데이터 구조를 선택하고 활용할 수 있게 해줍니다.
+
 ##### 🚀 성능 최적화
 Redis는 메모리 기반 데이터 저장소로, 집합 연산을 포함한 모든 작업이 매우 빠르게 수행됩니다. 
 
@@ -123,3 +135,169 @@ SetOperations를 사용하면 고성능의 데이터 처리가 가능합니다.
 ##### 🚀 직렬화/역직렬화 오버헤드
 복잡한 객체를 집합의 요소로 저장하려면 직렬화가 필요할 수 있으며, 조회 시 역직렬화가 필요합니다. 
 이 과정에서 성능 저하가 발생할 수 있습니다.
+
+
+# Java 자료구조 → Redis 자료구조
+Java 애플리케이션에서 사용하는 기본 자료구조를 Redis의 고성능, 분산 데이터 스토리지 시스템으로 효율적으로 옮기고 활용하는 방법에 대한 가이드를 제공합니다. 이 문서는 Spring Data Redis를 활용하여 Java의 String, List, Map, Set 등의 자료구조를 Redis의 String, List, Hash, Set 데이터 구조로 변환하고 관리하는 방법을 설명합니다.
+ 
+## String
+
+```
+
+@Component
+public class RedisTemplateString {
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
+    /**
+     * Save String
+     */
+    public void saveStringType(String key, String value) {
+        ValueOperations<String, String> stringStringValueOperations = redisTemplate.opsForValue();
+        stringStringValueOperations.set(key, value);
+    }
+
+    /**
+     * Read String
+     */
+    public String getStringType(String key) {
+        ValueOperations<String, String> stringStringValueOperations = redisTemplate.opsForValue();
+        return stringStringValueOperations.get(key);
+    }
+
+    /**
+     * Delete String
+     */
+    public void deleteStringType(String key) {
+        redisTemplate.delete(key);
+    }
+}
+```
+
+## List
+```
+
+@Component
+public class RedisTemplateList {
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
+    /**
+     * Save List<String> : Right Push
+     */
+    public void saveListRightPush(String key, List<String> list) {
+        ListOperations<String, String> listOps = redisTemplate.opsForList();
+        list.forEach(word -> listOps.rightPush(key, word));
+    }
+
+    /**
+     * Read List<String> : Left Push
+     */
+    public void saveListLeftPush(String key, List<String> list) {
+        ListOperations<String, String> listOps = redisTemplate.opsForList();
+        list.forEach(word -> listOps.leftPush(key, word));
+    }
+
+    /**
+     * Read List<String>
+     */
+    public List<String> getList(String key) {
+        ListOperations<String, String> listOps = redisTemplate.opsForList();
+        return listOps.range(key, 0, -1);
+    }
+
+    /**
+     * Delete List<String>
+     */
+    public void deleteList(String key) {
+        redisTemplate.delete(key);
+    }
+}
+```
+
+## Map
+
+```
+@Component
+public class HashOperationsMap {
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+    private HashOperations<String, String, String> hashOperations;
+
+    @PostConstruct
+    private void init() {
+        hashOperations = redisTemplate.opsForHash();
+    }
+
+    /**
+     * Save Map<String, String>
+     */
+    public void saveMap(String key, Map<String, String> map) {
+        hashOperations.putAll(key, map);
+    }
+
+    /**
+     * Read Map<String, String>
+     */
+    public Map<String, String> getMap(String key) {
+        return hashOperations.entries(key);
+    }
+
+    /**
+     * Delete Map<String, String>
+     */
+    public void deleteMap(String key){
+        hashOperations.getOperations().delete(key);
+    }
+}
+
+```
+
+## Set
+
+```
+@Component
+public class RedisTemplateSets {
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+    private SetOperations<String, String> setOperations;
+
+
+    @PostConstruct
+    private void init() {
+        this.setOperations = redisTemplate.opsForSet();
+    }
+
+    /**
+     * Save Set<String>
+     */
+    public void addToSet(String key, String... values) {
+        setOperations.add(key, values);
+    }
+
+    /**
+     * Read Set<String>
+     */
+    public Set<String> getMembers(String key) {
+        return setOperations.members(key);
+    }
+
+    /**
+     * Delete Set<String>
+     */
+    public void removeFromSet(String key, String... values) {
+        setOperations.remove(key, (Object[])values);
+    }
+
+    /**
+     * Read Set Size
+     */
+    public Long setSize(String key) {
+        return setOperations.size(key);
+    }
+}
+
