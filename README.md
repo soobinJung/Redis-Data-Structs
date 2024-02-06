@@ -307,6 +307,9 @@ public class RedisTemplateSets {
         return setOperations.size(key);
     }
 }
+```
 
+<br/>
 
-<a href='https://github.com/soobinJung/Redis-Data-Structs/blob/main/src/test/java/com/example/demo/redis/RedisSaveTest.java'> Test 코드 첨부 </a>
+#### Test 코드 첨부
+https://github.com/soobinJung/Redis-Data-Structs/blob/main/src/test/java/com/example/demo/redis/RedisSaveTest.java
