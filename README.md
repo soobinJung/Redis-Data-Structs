@@ -138,6 +138,18 @@ Java 애플리케이션에서 사용하는 기본 자료구조를 Redis의 고�
 ## String
 
 ```
+127.0.0.1:6379> SET key value
+OK
+127.0.0.1:6379> GET key
+"value"
+127.0.0.1:6379> DEL key
+(integer) 1
+127.0.0.1:6379> GET key
+(nil)
+```
+
+
+```
 
 @Component
 public class RedisTemplateString {
@@ -175,6 +187,22 @@ public class RedisTemplateString {
 ## List
 - 순서가 있는 데이터 컬렉션을 관리합니다.
 - 큐나 스택과 같은 데이터 구조를 구현할 때 유용합니다.
+
+```
+127.0.0.1:6379> RPUSH key value1 value2
+(integer) 2
+127.0.0.1:6379> LPUSH key value3 value4
+(integer) 4
+127.0.0.1:6379> LRANGE key 0 -1
+1) "value4"
+2) "value3"
+3) "value1"
+4) "value2"
+127.0.0.1:6379> DEL key
+(integer) 1
+127.0.0.1:6379> LRANGE key 0 -1
+(empty array)
+```
 
 ```
 
@@ -223,6 +251,20 @@ public class RedisTemplateList {
 - 객체나 다양한 속성을 가진 데이터를 관리하는 데 적합합니다.
 
 ```
+127.0.0.1:6379> HSET key field1 value1 field2 value2
+(integer) 2
+127.0.0.1:6379> HGETALL key
+1) "field1"
+2) "value1"
+3) "field2"
+4) "value2"
+127.0.0.1:6379> DEL key
+(integer) 1
+127.0.0.1:6379> HGETALL key
+(empty array)
+```
+
+```
 @Component
 public class HashOperationsMap {
 
@@ -264,6 +306,27 @@ public class HashOperationsMap {
 
 - 중복이 없는 요소의 집합을 관리합니다.
 - 고유 값의 저장이나 집합 연산에 유용합니다.
+
+```
+127.0.0.1:6379> SADD key value1 value2
+(integer) 2
+127.0.0.1:6379> SMEMBERS key
+1) "value1"
+2) "value2"
+127.0.0.1:6379> SADD key value1 value3
+(integer) 1
+127.0.0.1:6379> SMEMBERS key
+1) "value1"
+2) "value2"
+3) "value3"
+127.0.0.1:6379> SREM key value2
+(integer) 1
+127.0.0.1:6379> SMEMBERS key
+1) "value1"
+2) "value3"
+127.0.0.1:6379> SCARD key
+(integer) 2
+```
 
 ```
 @Component
